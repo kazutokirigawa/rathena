@@ -2061,14 +2061,6 @@ uint8 npc_selllist(struct map_session_data* sd, int n, unsigned short *item_list
 		idx    = item_list[i*2]-2;
 		amount = item_list[i*2+1];
 
-		if( sd->inventory_data[idx]->type == IT_PETEGG && sd->inventory.u.items_inventory[idx].card[0] == CARD0_PET )
-		{
-			if( pet_db_search(sd->inventory.u.items_inventory[idx].nameid, PET_EGG) )
-			{
-				intif_delete_petdata(MakeDWord(sd->inventory.u.items_inventory[idx].card[1], sd->inventory.u.items_inventory[idx].card[2]));
-			}
-		}
-
 		pc_delitem(sd, idx, amount, 0, 6, LOG_TYPE_NPC);
 	}
 

@@ -7724,10 +7724,6 @@ static void buildin_delitem_delete(struct map_session_data* sd, int idx, int* am
 
 	if( delete_items )
 	{
-		if( itemdb_type(itm->nameid) == IT_PETEGG && itm->card[0] == CARD0_PET )
-		{// delete associated pet
-			intif_delete_petdata(MakeDWord(itm->card[1], itm->card[2]));
-		}
 		switch(loc) {
 			case TABLE_CART:
 				pc_cart_delitem(sd,idx,delamount,0,LOG_TYPE_SCRIPT);

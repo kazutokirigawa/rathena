@@ -8970,10 +8970,6 @@ ACMD_FUNC(delitem)
 	{
 		int delamount = ( amount < sd->inventory.u.items_inventory[idx].amount ) ? amount : sd->inventory.u.items_inventory[idx].amount;
 
-		if( sd->inventory_data[idx]->type == IT_PETEGG && sd->inventory.u.items_inventory[idx].card[0] == CARD0_PET )
-		{// delete pet
-			intif_delete_petdata(MakeDWord(sd->inventory.u.items_inventory[idx].card[1], sd->inventory.u.items_inventory[idx].card[2]));
-		}
 		pc_delitem(sd, idx, delamount, 0, 0, LOG_TYPE_COMMAND);
 
 		amount-= delamount;

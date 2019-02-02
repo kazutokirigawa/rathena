@@ -4626,7 +4626,7 @@ char pc_additem(struct map_session_data *sd,struct item *item,int amount,e_log_p
  * @param type &1: Don't notify deletion; &2 Don't notify weight change; &4 Don't calculate status
  * @param reason Delete reason
  * @param log_type e_log_pick_type
- * @return 1 - invalid itemid or negative amount; 0 - Success
+ * @return 1 - invalid itemid or negative amount or pet with no connection to inter server; 0 - Success
  *------------------------------------------*/
 char pc_delitem(struct map_session_data *sd,int n,int amount,int type, short reason, e_log_pick_type log_type)
 {
@@ -4634,6 +4634,13 @@ char pc_delitem(struct map_session_data *sd,int n,int amount,int type, short rea
 
 	if(n < 0 || sd->inventory.u.items_inventory[n].nameid == 0 || amount <= 0 || sd->inventory.u.items_inventory[n].amount<amount || sd->inventory_data[n] == NULL)
 		return 1;
+
+	// Check if the item is a pet egg and if so, delete the pet with it
+	if( sd->inventory_data[n]->type == IT_PETEGG && sd->inventory.u.items_inventory[n].card[0] == CARD0_PET ){
+		if( !intif_delete_petdata( MakeDWord( sd->inventory.u.items_inventory[n].card[1], sd->inventory.u.items_inventory[n].card[2] ) ) ){
+			return 1;
+		}
+	}
 
 	log_pick_pc(sd, log_type, -amount, &sd->inventory.u.items_inventory[n]);
 
@@ -5140,6 +5147,11 @@ void pc_cart_delitem(struct map_session_data *sd,int n,int amount,int type,e_log
 	if(sd->cart.u.items_cart[n].nameid == 0 ||
 		sd->cart.u.items_cart[n].amount < amount)
 		return;
+
+	// Check if the item is a pet egg and if so, delete the pet with it
+	if( itemdb_type( sd->cart.u.items_cart[n].nameid ) == IT_PETEGG && sd->cart.u.items_cart[n].card[0] == CARD0_PET ){
+		intif_delete_petdata( MakeDWord( sd->cart.u.items_cart[n].card[1], sd->cart.u.items_cart[n].card[2] ) );
+	}
 
 	log_pick_pc(sd, log_type, -amount, &sd->cart.u.items_cart[n]);
 

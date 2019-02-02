@@ -13,6 +13,7 @@
 #include "../common/nullpo.hpp"
 #include "../common/showmsg.hpp"
 #include "../common/utilities.hpp"
+#include "../common/utils.hpp"
 
 #include "battle.hpp"
 #include "chrif.hpp"
@@ -319,6 +320,11 @@ int storage_delitem(struct map_session_data* sd, struct s_storage *stor, int ind
 {
 	if( stor->u.items_storage[index].nameid == 0 || stor->u.items_storage[index].amount < amount )
 		return 1;
+
+	// Check if the item is a pet egg and if so, delete the pet with it
+	if( itemdb_type( stor->u.items_storage[index].nameid ) == IT_PETEGG && stor->u.items_storage[index].card[0] == CARD0_PET ){
+		intif_delete_petdata( MakeDWord( stor->u.items_storage[index].card[1], stor->u.items_storage[index].card[2] ) );
+	}
 
 	stor->u.items_storage[index].amount -= amount;
 	stor->dirty = true;
@@ -868,6 +874,11 @@ bool storage_guild_delitem(struct map_session_data* sd, struct s_storage* stor, 
 
 	if(!stor->u.items_guild[n].nameid || stor->u.items_guild[n].amount < amount)
 		return false;
+
+	// Check if the item is a pet egg and if so, delete the pet with it
+	if( itemdb_type( stor->u.items_guild[n].nameid ) == IT_PETEGG && stor->u.items_guild[n].card[0] == CARD0_PET ){
+		intif_delete_petdata( MakeDWord( stor->u.items_guild[n].card[1], stor->u.items_guild[n].card[2] ) );
+	}
 
 	// Log before removing it
 	storage_guild_log( sd, &stor->u.items_guild[n], -amount );
